@@ -14,12 +14,30 @@
  * limitations under the License.
  */
 
-export const javascript = `function main(params) {
-   return params
+export const javascript = `function main(args) {
+  let name = args.name || 'stranger'
+  let greeting = 'Hello ' + name + '!'
+  console.log(greeting)
+  return {"greeting": greeting}
 }`
 
-export const python = `def main(params):
-   return { "python": "fun" }`
+export const python = `def main(args):
+    name = args.get("name", "stranger")
+    greeting = "Hello " + name + "!"
+    print(greeting)
+    return {"greeting": greeting}`
+
+export const swift = `func main(args: [String:Any]) -> [String:Any] {
+    if let name = args["name"] as? String {
+        let greeting = "Hello \(name)!"
+        print(greeting)
+        return [ "greeting" : greeting ]
+    } else {
+        let greeting = "Hello stranger!"
+        print(greeting)
+        return [ "greeting" : greeting ]
+    }
+}`
 
 export const php = `<?php
 function main(array $args) : array
