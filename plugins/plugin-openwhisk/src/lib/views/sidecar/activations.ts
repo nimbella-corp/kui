@@ -47,10 +47,10 @@ export default (tab: Tab, entity, options: ShowOptions) => {
 
   // limits
   const entityLimitsAnnotation = entity.annotations.find(kv => kv.key === 'limits')
-  if (!entityLimitsAnnotation || entity.noCost) {
-    // noCost means we should not display any cost info
+//   if (!entityLimitsAnnotation || entity.noCost) {
+//     // noCost means we should not display any cost info
     sidecar.classList.add('no-limits-data')
-  }
+//   }
 
   // start time
   const startDom = sidecar.querySelector('.activation-start')
