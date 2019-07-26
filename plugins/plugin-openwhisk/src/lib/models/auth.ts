@@ -62,7 +62,7 @@ function getDefaultApiHost() {
   if (inElectron() && config && config['electron-host']) {
     return config['electron-host']
   }
-  return window.location ? window.location.host : ''
+  return window.location ? window.location.origin : ''
 }
 
 /**
