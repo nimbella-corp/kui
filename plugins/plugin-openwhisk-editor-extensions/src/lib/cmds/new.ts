@@ -179,7 +179,8 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
     .then(check)
     .then(entity =>
       Object.assign({}, entity, {
-        gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) })
+        gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) }),
+      persister: persisters.actions
       })
     )
     .catch(err => {
