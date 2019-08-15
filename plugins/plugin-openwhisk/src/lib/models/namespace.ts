@@ -166,6 +166,14 @@ export const setNeedsNamespace = async (err?: Error) => {
   // hasn't yet selected a namespace.
   if (err) {
     console.error(err)
+    if (err['statusCode'] === 401) {
+      currentNS = undefined
+      await read().then(result => {
+        delete result._full[result._host]
+        write(result)
+      })
+      throw new Error('An authorization has become invalid.  One or more authorizations have been dropped')
+    }
   }
 
   debug('setNeedsNamespace')
