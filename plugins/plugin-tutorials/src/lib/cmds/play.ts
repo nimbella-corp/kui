@@ -32,6 +32,7 @@ import {
   toggleMaximization
 } from '@kui-shell/core/webapp/views/sidecar'
 import { CommandRegistrar, EvaluatorArgs, ExecType } from '@kui-shell/core/models/command'
+import { inElectron } from '@kui-shell/core/core/capabilities'
 
 const debug = Debug('plugins/tutorials/play')
 
@@ -785,12 +786,13 @@ const showTutorial = (tab: cli.Tab, tutorialName: string, obj: TutorialDefinitio
     // Open links in new tab or browser
     // From StackOverflow
     // https://stackoverflow.com/questions/31749625/make-a-link-from-electron-open-in-browser/34503175
-    const shell = require('electron').shell
-    $(document).on('click', 'a[href^="http"]', function(this: HTMLLinkElement, event: MouseEvent) {
-      event.preventDefault()
-      shell.openExternal(this.href)
-    })
-
+    if (inElectron()) {
+      const shell = require('electron').shell
+      $(document).on('click', 'a[href^="http"]', function(this: HTMLLinkElement, event: MouseEvent) {
+        event.preventDefault()
+        shell.openExternal(this.href)
+      })
+    }
     // insert pane
     document.querySelector('body').classList.add('tutorial-in-progress')
 
