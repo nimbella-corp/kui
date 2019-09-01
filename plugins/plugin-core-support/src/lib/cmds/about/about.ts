@@ -263,11 +263,11 @@ const aboutWindow = async ({ tab, execOptions, parsedOptions }: EvaluatorArgs) =
 
   const standardModes: SidecarMode[] = [
     { mode: 'about', label: strings('About'), direct: 'about' },
-    {
-      mode: 'gettingStarted',
-      label: strings('Getting Started'),
-      direct: 'about --mode gettingStarted'
-    },
+    // {
+    //   mode: 'gettingStarted',
+    //   label: strings('Getting Started'),
+    //   direct: 'about --mode gettingStarted'
+    // },
     { mode: 'configure', label: strings('Configure'), direct: 'about --mode configure --content themes' },
     { mode: 'version', label: strings('Version'), direct: 'about --mode version' }
   ]
@@ -351,11 +351,11 @@ export default (commandTree: CommandRegistrar) => {
   })
 
   // getting started shortcut
-  commandTree.listen('/getting/started', () => repl.qexec('about --mode gettingStarted'), {
-    noAuthOk,
-    needsUI: true,
-    inBrowserOk: true
-  })
+  // commandTree.listen('/getting/started', () => repl.qexec('about --mode gettingStarted'), {
+  //   noAuthOk,
+  //   needsUI: true,
+  //   inBrowserOk: true
+  // })
 }
 
 export const preload = () => {
