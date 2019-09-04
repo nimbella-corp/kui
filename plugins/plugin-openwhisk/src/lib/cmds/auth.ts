@@ -22,7 +22,7 @@
 
 import * as Debug from 'debug'
 
-import { inBrowser } from '@kui-shell/core/core/capabilities'
+import { inBrowser, isHeadless } from '@kui-shell/core/core/capabilities'
 import { clearSelection } from '@kui-shell/core/webapp/views/sidecar'
 import eventBus from '@kui-shell/core/core/events'
 import { partial, Tab } from '@kui-shell/core/webapp/cli'
@@ -152,7 +152,9 @@ const informUserOfChange = (tab: Tab, subject?: string) => () => {
   )
 
   return apiHost.get().then(async host => {
-    clearSelection(tab)
+    if (!isHeadless()) {
+      clearSelection(tab)
+    }
     return `You are now using the OpenWhisk host ${host}, and namespace ${await namespace.current()}`
   })
 }
