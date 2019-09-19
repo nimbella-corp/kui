@@ -33,7 +33,7 @@ const domReady = prefs => async () => {
   const sidecar = import('../views/sidecar')
   const electronEvents = import('../electron-events')
   const events = import('../../core/events')
-  // const query = import('../query')
+  const query = import('../query')
 
   try {
     const waitForThese = []
@@ -57,9 +57,11 @@ const domReady = prefs => async () => {
 
     sidecar.then(_ => _.init())
 
-    waitForThese[1].then(() => initializer).then(_ => _.init(prefs))
-
-    // await query.then(_ => _.init())
+    waitForThese[1]
+      .then(() => initializer)
+      .then(_ => _.init(prefs))
+      .then(() => query)
+      .then(_ => _.init())
 
     await Promise.all(waitForThese)
 
