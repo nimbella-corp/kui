@@ -33,7 +33,7 @@ import { SidecarMode } from '@kui-shell/core/webapp/bottom-stripe'
 import withHeader from '../models/withHeader'
 import { synonymsTable, synonyms } from '../models/synonyms'
 import { actionSpecificModes, addActionMode, activationModes, addActivationModes } from '../models/modes'
-import { ow as globalOW, apiHost, apihost, auth as authModel, initOWFromConfig } from '../models/auth'
+import { ow as globalOW, apiHost, auth as authModel, initOWFromConfig } from '../models/auth'
 import { currentSelection } from '../models/openwhisk-entity'
 import * as repl from '@kui-shell/core/core/repl'
 import * as historyModel from '@kui-shell/core/models/history'
@@ -442,7 +442,7 @@ export const addPrettyType = (entityType: string, verb: string, entityName: stri
     entity.verb = verb
 
     // add apihost
-    entity.apiHost = apihost
+    entity.apiHost = await apiHost.get()
   }
 
   if (specials[entityType] && specials[entityType][verb]) {

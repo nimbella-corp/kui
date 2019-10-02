@@ -69,7 +69,7 @@ function getDefaultApiHost() {
  *
  *
  */
-export let apihost: string =
+let apihost: string =
   process.env.__OW_API_HOST ||
   wskprops.APIHOST ||
   store().getItem(localStorageKey.host) ||
@@ -137,7 +137,7 @@ if (getDefaultCommandContext()[0] === 'wsk' && getDefaultCommandContext()[1] ===
   initOW()
 }
 
-export const apiHost = {
+export let apiHost = {
   get: () => Promise.resolve(apihost),
   set: async (newHost: string, { ignoreCerts = false } = {}) => {
     // eslint-disable-next-line node/no-deprecated-api
@@ -160,7 +160,7 @@ export const apiHost = {
   }
 }
 
-export const auth = {
+export let auth = {
   get: () => authKey,
   getSubjectId: () => authKey.split(/:/)[0] || authKey, // if authKey is x:y, return x, otherwise return auth
   set: (newAuthKey: string): Promise<boolean> => {
@@ -172,4 +172,28 @@ export const auth = {
     debug('set', auth)
     return Promise.resolve(needReinit)
   }
+}
+
+// Swap functions related to the administrative model
+interface HostOptions {
+  ignoreCerts?: boolean
+}
+export interface APIHostService {
+  get: () => Promise<string>
+  set: (newHost: string, options?: HostOptions) => Promise<string>
+}
+export interface AuthService {
+  get: () => string
+  set: (newAuthKey: string) => Promise<boolean>
+  getSubjectId: () => string
+}
+export interface AuthModelMethods {
+  apiHost: APIHostService
+  auth: AuthService
+}
+export function swapAuthModelMethods(newMethods: AuthModelMethods): AuthModelMethods {
+  const saved = { apiHost, auth }
+  apiHost = newMethods.apiHost
+  auth = newMethods.auth
+  return saved
 }
