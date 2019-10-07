@@ -244,7 +244,7 @@ const updateLocalWskProps = (auth?: string, subject?: string): Promise<string> =
  * List registered namespaces
  *
  */
-const list = async (): Promise<Table> => {
+let list = async (): Promise<Table> => {
   debug('list')
 
   const list = await namespace.list()
@@ -302,8 +302,8 @@ interface UseOptions {
  * Switch to use a different namespace, by name, given by argv[2]
  *
  */
-const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorArgs) =>
-  namespace.get(firstArg(argvNoOptions, verb)).then(auth => {
+let use = ({ argvNoOptions, parsedOptions, tab }: EvaluatorArgs) =>
+  namespace.get(firstArg(argvNoOptions, 'switch')).then(auth => {
     if (auth) {
       /**
        * e.g. auth switch [auth] (=> options.save is undefined)
@@ -321,7 +321,7 @@ const use = (verb: string) => ({ argvNoOptions, parsedOptions, tab }: EvaluatorA
       }
     } else {
       return namespace.list().then(namespaces => {
-        const ns = firstArg(argvNoOptions, verb)
+        const ns = firstArg(argvNoOptions, 'switch')
         console.error(`Namespace not found ${ns} ${JSON.stringify(namespaces)}`)
         throw new Error(`The details for this namespace were not found: ${ns}`)
       })
@@ -344,7 +344,7 @@ const clicky = (parent: HTMLElement, cmd: string, exec) => {
  * Command impl for auth add
  *
  */
-const addFn = (tab: Tab, key: string, subject: string) => {
+let addFn = (tab: Tab, key: string, subject: string) => {
   debug('add', key, subject)
 
   const previousAuth = authModel.get()
@@ -377,7 +377,7 @@ const addFn = (tab: Tab, key: string, subject: string) => {
  * Command impl for host set
  *
  */
-const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
+let hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: EvaluatorArgs) => {
   const argv = slice(argvNoOptions, 'set')
 
   let hostConfig = {
@@ -501,7 +501,7 @@ const hostSet = async ({ argvNoOptions, parsedOptions: options, execOptions }: E
  * Ping a variety of localhost options to see if one is awake
  *
  */
-const pingLocal = async () => {
+let pingLocal = async () => {
   debug('pingLocal')
 
   // we will try a variety of options
@@ -573,6 +573,13 @@ const pingLocal = async () => {
   })
 } /* pingLocal */
 
+let getNamespace = (options: EvaluatorArgs) => {
+  // the api returns, as a historical artifact, an array of length 1
+  return getClient(options.execOptions)
+    .namespaces.list(owOpts())
+    .then(A => A[0])
+}
+
 /**
  * Register command handlers
  *
@@ -585,7 +592,7 @@ export default async (commandTree: CommandRegistrar) => {
 
   const add = ({ argvNoOptions, tab }: EvaluatorArgs) => addFn(tab, firstArg(argvNoOptions, 'add'), undefined)
 
-  commandTree.listen('/wsk/auth/switch', use('switch'), {
+  commandTree.listen('/wsk/auth/switch', use, {
     usage: usage.auth.switch,
     noAuthOk: true,
     inBrowserOk: true
@@ -629,18 +636,31 @@ export default async (commandTree: CommandRegistrar) => {
    * An internal command that turns the current auth key into the corresponding openwhisk namespace
    *
    */
-  commandTree.listen(
-    '/wsk/auth/namespace/get',
-    ({ execOptions }) => {
-      // the api returns, as a historical artifact, an array of length 1
-      return getClient(execOptions)
-        .namespaces.list(owOpts())
-        .then(A => A[0])
-    },
-    { hidden: true }
-  )
+  commandTree.listen('/wsk/auth/namespace/get', getNamespace, {
+    hidden: true
+  })
 
   return {
     add: addFn
   }
+}
+
+// Swap methods related to the administrative model
+export interface AuthCmdMethods {
+  hostSet: (options: EvaluatorArgs) => Promise<unknown>
+  use: (options: EvaluatorArgs) => Promise<string>
+  addFn: (tab: Tab, key: string, subject: string) => Promise<string>
+  list: () => Promise<Table>
+  pingLocal: () => Promise<unknown>
+  getNamespace: (options: EvaluatorArgs) => Promise<string>
+}
+export function swapAuthCmdMethods(newMethods: AuthCmdMethods): AuthCmdMethods {
+  const saved = { hostSet, use, addFn, list, pingLocal, getNamespace }
+  hostSet = newMethods.hostSet
+  use = newMethods.use
+  addFn = newMethods.addFn
+  list = newMethods.list
+  pingLocal = newMethods.pingLocal
+  getNamespace = newMethods.getNamespace
+  return saved
 }

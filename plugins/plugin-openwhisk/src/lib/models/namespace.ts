@@ -31,7 +31,7 @@ const key = 'wsk.namespaces'
 let cached
 let currentNS
 
-const read = () =>
+let read = () =>
   apiHost.get().then(host => {
     debug('read:host', host)
     let model = cached
@@ -61,7 +61,7 @@ const read = () =>
     }
   })
 
-const write = model => {
+let write = model => {
   cached = model._full
   store().setItem(key, JSON.stringify(model._full))
 }
@@ -70,11 +70,15 @@ const write = model => {
  * If user switches namespace, save it to local storage
  *
  */
-const writeSelectedNS = selectedNS => {
+let writeSelectedNS = selectedNS => {
   if (store().getItem('selectedNS') !== selectedNS) {
     store().setItem('selectedNS', selectedNS)
     debug('stored selected namespace to local storage', store().getItem('selectedNS'))
   }
+}
+
+let readSelectedNS = () => {
+  return Promise.resolve(store().getItem('selectedNS'))
 }
 
 export const setApiHost = (apiHost = '') => {
@@ -177,7 +181,7 @@ export const setNeedsNamespace = async (err?: Error) => {
   }
 
   debug('setNeedsNamespace')
-  const localSelectedNS = store().getItem('selectedNS')
+  const localSelectedNS = readSelectedNS()
   if (localSelectedNS) {
     debug('user selected one namespace previously, so auto-selecting it from local storage', localSelectedNS)
     try {
@@ -319,3 +323,24 @@ export const use = (auth: string) => {
  *
  */
 export const get = name => read().then(model => model && model.namespaces[name])
+
+// Swap methods related to the administrative model
+export interface NSModel {
+  _full: { [key: string]: { [key: string]: string } }
+  _host: string
+  namespaces: { [key: string]: string }
+}
+export interface NSMethods {
+  read: () => Promise<NSModel>
+  write: (toWrite: NSModel) => void
+  readSelectedNS: () => Promise<string>
+  writeSelectedNS: (selectedNS: string) => void
+}
+export function swapNSMethods(newMethods: NSMethods): NSMethods {
+  const reply = { read, write, readSelectedNS, writeSelectedNS }
+  read = newMethods.read
+  write = newMethods.write
+  readSelectedNS = newMethods.readSelectedNS
+  writeSelectedNS = newMethods.writeSelectedNS
+  return reply
+}
