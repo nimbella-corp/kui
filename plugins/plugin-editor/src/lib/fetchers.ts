@@ -24,6 +24,7 @@ import { ParsedOptionsFull } from '@kui-shell/core/models/command'
 import { ExecOptions } from '@kui-shell/core/models/execOptions'
 
 import { persisters } from './persisters'
+import { hasLocalAccess } from '@kui-shell/core/core/capabilities'
 const debug = Debug('plugins/editor/fetchers')
 
 interface ExecSpec {
@@ -176,4 +177,6 @@ export const fetchEntity = async (
 }
 
 /* register the built-in local file fetcher */
-registerFetcher(fetchFile)
+if (hasLocalAccess()) {
+  registerFetcher(fetchFile)
+}
