@@ -59,6 +59,17 @@ const wskflow = async (tab: cli.Tab, ast: Record<string, any>, rule?) => {
   sidecar.setAttribute('data-active-view', '.custom-content > div')
 }
 
+// Enable insertion of zip file handling from another plugin
+let zippedActionHandler: (code: string, parent: HTMLElement, tab: cli.Tab, entity) => Promise<Element>
+let isZippedAction: (entity: any) => boolean = () => false
+export const provideZipProcessing = (
+  handler: (code: string, parent: HTMLElement, tab: cli.Tab, entity) => Promise<Element>,
+  tester: (entity: any) => boolean
+) => {
+  zippedActionHandler = handler
+  isZippedAction = tester
+}
+
 /**
  * Load the given entity into the sidecar UI
  *
@@ -331,9 +342,10 @@ export const showEntity = async (
               // but hljs.highlight seems better
               code.innerHTML = hljs.highlight(lang, codeText).value
               code.className = `action-source ${lang}`
+            } else if (isZippedAction(entity)) {
+              code.appendChild(await zippedActionHandler(entity.exec.code, code, tab, entity))
             } else {
-              // TODO what do we do with binary actions?
-              code.innerText = 'This is a binary action'
+              code.innerText = 'This is a binary action but not a zip file'
             }
           }
         }
