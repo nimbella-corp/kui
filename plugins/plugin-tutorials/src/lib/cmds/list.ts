@@ -118,12 +118,11 @@ const doList = (): Promise<Table> =>
  *
  */
 const usage = {
-  command: 'tutorials',
-  strict: 'tutorials',
+  command: 'list',
+  strict: 'list',
   title: 'List tutorials',
   header: 'List available tutorials',
-  example: 'tutorials',
-  optional: [{ name: 'list', positional: true }]
+  example: 'tutor list'
 }
 
 /**
@@ -131,9 +130,7 @@ const usage = {
  *
  */
 export default async (commandTree: CommandRegistrar) => {
-  const opts = { usage, noAuthOk: true }
+  const opts = { usage, noAuthOk: true, requiresLocal: true }
 
-  commandTree.listen(`/tutorial/list`, doList, opts)
-  commandTree.listen(`/tutorials/list`, doList, opts)
-  commandTree.listen(`/tutorials`, doList, opts)
+  commandTree.listen(`/tutor/list`, doList, opts)
 }

@@ -935,17 +935,17 @@ const usage = (cmd: string) => ({
  */
 export default async (commandTree: CommandRegistrar) => {
   // synonyms for playing a tutorial
-  const cmd = commandTree.listen('/tutorial/play', use('play'), {
+  const cmd = commandTree.listen('/tutor/play', use('play'), {
     usage: usage('play'),
     needsUI: true,
     noAuthOk: true
   })
-  commandTree.synonym('/tutorial/use', use('use'), cmd, {
+  commandTree.synonym('/tutor/use', use('use'), cmd, {
     usage: usage('use'),
     needsUI: true,
     noAuthOk: true
   })
-  commandTree.synonym('/tutorial/start', use('start'), cmd, {
+  commandTree.synonym('/tutor/start', use('start'), cmd, {
     usage: usage('start'),
     needsUI: true,
     noAuthOk: true

@@ -35,7 +35,7 @@ import { qexec } from '@kui-shell/core/core/repl'
 export default async (commandTree: CommandRegistrar) => {
   // kubernetes coding basics shortcut
   commandTree.listen(
-    '/tutorial/kubernetes/starter',
+    '/tutor/kubernetes/starter',
     () => qexec('tutorial play @tutorials/kubernetes-basics --top-level'),
     {
       usage: { command: 'basics', docs: kubernetesBasicsDocs },
@@ -46,7 +46,7 @@ export default async (commandTree: CommandRegistrar) => {
   )
 
   // coding basics shortcut
-  commandTree.listen('/tutorial/composer/basics', () => qexec('tutorial play @tutorials/coding-basics --top-level'), {
+  commandTree.listen('/tutor/composer/basics', () => qexec('tutorial play @tutorials/coding-basics --top-level'), {
     usage: { command: 'basics', docs: codingBasicsDocs },
     needsUI: true,
     inBrowserOk: true,
@@ -54,7 +54,7 @@ export default async (commandTree: CommandRegistrar) => {
   })
 
   // combinators shortcut
-  commandTree.listen('/tutorial/combinators', () => qexec('tutorial play @tutorials/combinators --top-level'), {
+  commandTree.listen('/tutor/combinators', () => qexec('tutorial play @tutorials/combinators --top-level'), {
     usage: { command: 'started', docs: combinatorsDocs },
     needsUI: true,
     inBrowserOk: true,

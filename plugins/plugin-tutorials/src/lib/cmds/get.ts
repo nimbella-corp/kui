@@ -270,5 +270,5 @@ const doGet = async ({ argvNoOptions }) => {
 }
 
 export default async (commandTree: CommandRegistrar) => {
-  commandTree.listen(`/tutorial/get`, doGet, { usage: usage.get })
+  commandTree.listen(`/tutor/get`, doGet, { usage: usage.get })
 }
