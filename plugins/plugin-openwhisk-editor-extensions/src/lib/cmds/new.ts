@@ -180,7 +180,7 @@ export const fetchAction = (check = checkForConformance, tryLocal = true) => (
     .then(entity =>
       Object.assign({}, entity, {
         gotoReadonlyView: ({ getEntity }) => lockIcon({ getEntity, direct: gotoReadonlyView({ getEntity }) }),
-      persister: persisters.actions
+        persister: persisters.actions
       })
     )
     .catch(err => {
@@ -285,6 +285,7 @@ export const newAction = ({
         name,
         type,
         exec: { kind, prettyKind, code },
+        annotations: [{ key: 'web-export', value: true }],
         isNew: true,
         ast,
         persister
